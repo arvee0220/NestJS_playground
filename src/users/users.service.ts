@@ -63,12 +63,8 @@ export class UsersService {
 
         const users = await this.repo.find({
             where: { email },
-            select: ["id", "email"],
-        });
-
-        if (users.length === 0) {
-            throw new NotFoundException(`User with ${email} not found`);
-        }
+            select: ["id", "email", "password"],
+        });        
 
         // Returns all users with the email similar to the passed argument
         return users;
