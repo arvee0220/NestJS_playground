@@ -33,7 +33,14 @@ export class UsersService {
 
         console.log(user);
 
-        return await this.repo.save(user);
+        await this.repo.save(user);
+
+        const showUser = await this.repo.findOne({
+            where: { id: user.id },
+            select: ["id", "email"],
+        });
+
+        return showUser;
     }
 
     async findOne(id: number) {
@@ -101,8 +108,8 @@ export class UsersService {
             throw new NotFoundException(`User with id ${id} does not exist`);
         }
 
-        const deletedUser = await this.repo.remove(user);
+        await this.repo.remove(user);
 
-        return deletedUser;
+        return { email: user.email, message: "User deleted successfully" };
     }
 }
