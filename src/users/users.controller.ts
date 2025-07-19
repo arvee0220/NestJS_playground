@@ -7,7 +7,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    Query,    
+    Query,
 } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { UsersService } from "./users.service";
@@ -16,6 +16,7 @@ import { Serialize } from "src/interceptors/serialize.interceptor";
 import { UserDto } from "./dto/user.dto";
 
 @Controller("auth")
+@Serialize(UserDto)
 export class UsersController {
     constructor(private usersService: UsersService) {}
 
@@ -36,12 +37,10 @@ export class UsersController {
         return users;
     }
 
-    @Serialize(UserDto)
     @Get("/:id")
     async findUser(@Param("id", ParseIntPipe) id: number) {
-
         console.log("handler is running");
-        
+
         return await this.usersService.findOne(id);
     }
 
