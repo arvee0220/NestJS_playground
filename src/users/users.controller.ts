@@ -14,6 +14,8 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 import { UsersService } from "./users.service";
 import { UpdateUserDTO } from "./dto/update-user.dto";
 import { SerializeInterceptor } from "src/interceptors/serialize.interceptor";
+import { UserDto } from "./dto/user.dto";
+import { User } from "./user.entity";
 
 @Controller("auth")
 export class UsersController {
@@ -36,10 +38,10 @@ export class UsersController {
         return users;
     }
 
-    @UseInterceptors(SerializeInterceptor)
+    @UseInterceptors(new SerializeInterceptor<User, UserDto>(UserDto))
     @Get("/:id")
     async findUser(@Param("id", ParseIntPipe) id: number) {
-        
+
         console.log("handler is running");
         
         return await this.usersService.findOne(id);
