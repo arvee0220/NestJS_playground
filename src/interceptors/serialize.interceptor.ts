@@ -32,4 +32,4 @@ export class SerializeInterceptor<TInput, TOutput> implements NestInterceptor<TI
             }),
         );
     }
-}
+}           

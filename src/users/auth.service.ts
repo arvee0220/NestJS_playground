@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { promisify } from "util";
 import { scrypt as _scrypt, randomBytes } from "crypto";
@@ -42,7 +46,7 @@ export class AuthService {
         const [user] = await this.usersService.find(email);
 
         if (!user) {
-            throw new BadRequestException("Invalid email or password");
+            throw new NotFoundException("User not found");
         }
 
         // Extract the salt and hash from the stored password
@@ -57,6 +61,9 @@ export class AuthService {
         }
 
         // Return the user without the password
-        return `Signed in successfully with email ${user.email}`;
+        return {
+            id: user.id,
+            email: user.email,
+        };
     }
 }
