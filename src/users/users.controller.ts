@@ -9,6 +9,7 @@ import {
     Post,
     Query,
     Session,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { UsersService } from "./users.service";
@@ -26,8 +27,20 @@ export class UsersController {
         private authService: AuthService,
     ) {}
 
+    @Get("/whoami")
+    whoAmI(@Session() session: SessionData) {
+        if (!session?.userId) {
+            throw new UnauthorizedException("User not authenticated");
+        }
+
+        return this.usersService.findOne(session.userId);
+    }
+
     @Post("/signup")
-    async createUser(@Body() body: CreateUserDTO, @Session() session: SessionData) {
+    async createUser(
+        @Body() body: CreateUserDTO,
+        @Session() session: SessionData,
+    ) {
         const user = await this.authService.signup(body.email, body.password);
 
         session.userId = user?.id;
@@ -36,12 +49,28 @@ export class UsersController {
     }
 
     @Post("/signin")
-    async signinUser(@Body() body: CreateUserDTO, @Session() session: SessionData) {
+    async signinUser(
+        @Body() body: CreateUserDTO,
+        @Session() session: SessionData,
+    ) {
         const user = await this.authService.signin(body.email, body.password);
 
         session.userId = user?.id;
 
         return user;
+    }
+
+    @Post("/signout")
+    async signoutUser(@Session() session: SessionData) {
+        if (!session?.userId) {
+            return `No current active session`;
+        }
+
+        const activeUser = await this.usersService.findOne(session.userId);
+
+        session.userId = null;
+
+        return `User ${activeUser?.email} signout`;
     }
 
     @Get()

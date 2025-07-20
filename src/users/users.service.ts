@@ -53,6 +53,10 @@ export class UsersService {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
 
+        if (!id) {
+            return null;
+        }
+
         return user;
     }
 
@@ -64,7 +68,7 @@ export class UsersService {
         const users = await this.repo.find({
             where: { email },
             select: ["id", "email", "password"],
-        });        
+        });
 
         // Returns all users with the email similar to the passed argument
         return users;

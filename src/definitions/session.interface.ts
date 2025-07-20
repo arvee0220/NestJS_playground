@@ -1,3 +1,3 @@
 export interface SessionData {
-    userId?: number;
+    userId?: number | null;
 }
