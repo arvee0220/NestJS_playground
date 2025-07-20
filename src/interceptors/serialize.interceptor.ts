@@ -6,6 +6,7 @@ type ClassConstructor<T> = {
   new (...args: unknown[]): T;
 };
 
+// Custom Decorator
 export function Serialize <T>(dto: ClassConstructor<T>) {
     return UseInterceptors(new SerializeInterceptor<unknown, T>(dto));
 }
