@@ -9,7 +9,7 @@ import {
     Post,
     Query,
     Session,
-    UnauthorizedException,
+    UseInterceptors,
 } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { UsersService } from "./users.service";
@@ -17,23 +17,32 @@ import { UpdateUserDTO } from "./dto/update-user.dto";
 import { Serialize } from "src/interceptors/serialize.interceptor";
 import { UserDto } from "./dto/user.dto";
 import { AuthService } from "./auth.service";
-import { SessionData } from "src/definitions/session.interface";
+import { User } from "./user.entity";
+import { CurrentUser } from "./decorators/current-users.decorator";
+import { CurrentUserInterceptor } from "./interceptors/current-user.interceptor";
+import { SessionData } from "express-session";
 
 @Controller("auth")
 @Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
     constructor(
         private usersService: UsersService,
         private authService: AuthService,
     ) {}
 
-    @Get("/whoami")
-    whoAmI(@Session() session: SessionData) {
+    // @Get("/whoami")
+    /* whoAmI(@Session() session: SessionData) {
         if (!session?.userId) {
             throw new UnauthorizedException("User not authenticated");
         }
 
         return this.usersService.findOne(session.userId);
+    } */
+
+    @Get("/whoami")
+    whoAmI(@CurrentUser() user: User) {
+        return user;
     }
 
     @Post("/signup")
